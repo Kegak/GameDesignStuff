@@ -3,11 +3,11 @@ let size = 100;
 
 
 
-let pongX = margin + size / 2
-let pongY = margin + size / 2
+let pongX = (margin + size) * 0.5
+let pongY = (margin + size) * 0.5
 let pongVX = 3
 let pongVY = 2
-let paddleX = margin + size / 2
+let paddleX = (margin + size) * 0.5
 let paddleWidth = 40;
 let points = 0;
 
@@ -33,7 +33,7 @@ function update() {
     }
     if (pongY > margin + size) {
       //Check for a collision with the paddle
-      if (paddleX - paddleWidth / 2 <= pongX && paddleX + paddleWidth / 2 >= pongX){
+      if (paddleX - paddleWidth * 0.5 <= pongX && paddleX + paddleWidth * 0.5 >= pongX){
         pongVY *= -1
         points++}
       else {
@@ -57,11 +57,11 @@ function update() {
     }
 
     //Constrain the paddle position
-    if (paddleX < margin + paddleWidth / 2) {
-      paddleX = paddleWidth / 2 + margin
+    if (paddleX < margin + paddleWidth * 0.5) {
+      paddleX = paddleWidth * 0.5 + margin
     }
-    if (paddleX > margin - paddleWidth / 2 + size) {
-      paddleX = -paddleWidth / 2 + margin + size
+    if (paddleX > margin - paddleWidth * 0.5 + size) {
+      paddleX = -paddleWidth * 0.5 + margin + size
     }
   }
   else {
@@ -97,8 +97,8 @@ function draw() {
 
     //Now draw the paddle
     ctx.beginPath()
-    ctx.moveTo(paddleX - paddleWidth / 2, margin + size)
-    ctx.lineTo(paddleX + paddleWidth / 2, margin + size)
+    ctx.moveTo(paddleX - paddleWidth * 0.5, margin + size)
+    ctx.lineTo(paddleX + paddleWidth * 0.5, margin + size)
     ctx.stroke()
 
     ctx.fillStyle = "blue"
