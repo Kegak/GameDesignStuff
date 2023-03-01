@@ -17,11 +17,11 @@ class SceneManager {
 class Scene {
   gameObjects = []
   addGameObject(gameObject){
-    this.gameObjects.push(gameObject);
-    if(gameObject.start && !gameObject.started){
-      gameObject.started = true
-      gameObject.start()
-    }
+      this.gameObjects.push(gameObject);
+      if(gameObject.start && !gameObject.started){
+          gameObject.started = true
+          gameObject.start()
+      }
   }
 }
 
@@ -30,15 +30,15 @@ class GameObject{
   components = []
   started = false
   addComponent(component){
-    this.components.push(component);
-    component.parent = this;
-    return this;
+      this.components.push(component);
+      component.parent = this;
+      return this;
   }
   static getObjectByName(name){
-    return SceneManager.getActiveScene().gameObjects.find(gameObject=>gameObject.name == name)
+      return SceneManager.getActiveScene().gameObjects.find(gameObject=>gameObject.name == name)
   }
   getComponent(name){
-    return this.components.find(c=>c.name == name)
+      return this.components.find(c=>c.name == name)
   }
 }
 
@@ -116,60 +116,53 @@ function engineUpdate() {
       scene.start()
       SceneManager.changedSceneFlag = false
   }
-}
   
-for(let gameObject of scene.gameObjects){
-  if (gameObject.start && !gameObject.started){
-    gameObject.start()
-    gameObject.started = true
-  }
-}
   for(let gameObject of scene.gameObjects){
-    for (let component of gameObject.components){
-      if(component.start && !component.started){
-        component.start()
-        component.started = true
+      if(gameObject.start && !gameObject.started){
+          gameObject.start()
+          gameObject.started = true
       }
-    }
-    }
-    for(let gameObject of scene.gameObjects){
-      if (gameObject.start && gameObject.started == false){
-        gameObject.start()
-        gameObject.started = true
-}
+  }
+
+  for(let gameObject of scene.gameObjects){
+      for(let component of gameObject.components){
+          if(component.start && !component.started){
+              component.start()
+              component.started = true
+          }
+      }
+  }
+
+  //Handle destroy here
+
+  for(let gameObject of scene.gameObjects){
+      for(let component of gameObject.components){
+          if(component.update){
+              component.update()
+          }
+      }
+  }
+
+  
+
 }
 
-for(let gameObject of scene.gameObjects){
-  for (let component of gameObject.components){
-    if(component.start && component.started == false){
-      component.start()
-      component.started = true
-    }
-  }
-  }
-  for(let gameObject of scene.gameObjects){
-    for (let component of gameObject.components){
-      if(component.draw){
-        component.draw()
-        
-      }
-    }
-  }
-  for(let gameObject of scene.gameObjects){
-    for (let component of gameObject.components){
-      if(component.update){
-        component.update()
-        
-      }
-    }
-  }
 function engineDraw() {
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
-  SceneManager.getActiveScene().draw(ctx)
+  
+  let scene = SceneManager.getActiveScene()
+  
+  for(let gameObject of scene.gameObjects){
+      for(let component of gameObject.components){
+          if(component.draw){
+              component.draw(ctx)
+          }
+      }
+  }
 }
 
-function start(title){
+function start(title) {
   document.title = title
   function gameLoop() {
       engineUpdate()
