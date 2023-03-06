@@ -63,19 +63,11 @@ class MainController extends Component {
 
 class MainDrawComponent extends Component{
     draw(ctx){
-        this.margin = 20
-        this.size = 100
         ctx.fillStyle = "rgb(135, 206, 235)";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        ctx.strokeStyle = "black"
-        ctx.beginPath()
-        ctx.moveTo(this.margin, this.margin)
-        ctx.lineTo(this.margin + this.size, this.margin)
-        ctx.lineTo(this.margin + this.size, this.margin + this.size)
-        ctx.moveTo(this.margin, this.margin + this.size)
-        ctx.lineTo(this.margin, this.margin)
-        ctx.stroke()
+        ctx.fillStyle = "black"
+        ctx.fillRect(0,0, 500, 300)
     }
 }
 
@@ -91,10 +83,71 @@ class MainDrawGameObject extends GameObject{
     }
 }
 
+class PlayCubeComponent extends Component{
+    name = "PlayCubeComponent"
+    start(){
+        this.width = 500
+        this.height = 300
+        this.cubeSide = 40
+    }
+    update(){
+        if (keysDown["ArrowLeft"] && keysDown["ArrowUp"]){
+            this.transform.x -= 3;
+            this.transform.y -= 3
+        }
+        else if (keysDown["ArrowLeft"] && keysDown["ArrowDown"]){
+            this.transform.x -= 3;
+            this.transform.y += 3
+        }
+        else if (keysDown["ArrowRight"] && keysDown["ArrowUp"]){
+            this.transform.x += 3;
+            this.transform.y -= 3
+        }
+        else if (keysDown["ArrowRight"] && keysDown["ArrowDown"]){
+            this.transform.x += 3;
+            this.transform.y += 3
+        }
+        else if (keysDown["ArrowLeft"]) {
+            this.transform.x -= 3;
+        }
+        else if (keysDown["ArrowRight"]) {
+            this.transform.x += 3
+        }
+        else if (keysDown["ArrowUp"]) {
+            this.transform.y -= 3
+        }
+        else if (keysDown["ArrowDown"]) {
+            this.transform.y += 3
+        }
+
+        if (this.transform.x <= 0){
+            this.transform.x = 0
+        }
+        if (this.transform.x >= 460){
+            this.transform.x = 460
+        }
+        if (this.transform.y <= 0){
+            this.transform.y = 0
+        }
+        if (this.transform.y >= 260){
+            this.transform.y = 260
+        }
+    }
+    draw(ctx){
+        ctx.fillStyle = "yellow"
+        ctx.fillRect(this.transform.x, this.transform.y, this.cubeSide, this.cubeSide)
+    }
+}
+
 class MainScene extends Scene {
     start() {
         this.addGameObject(new MainControllerGameObject())
         this.addGameObject(new MainDrawGameObject())
+        let playCubeGameObject = new GameObject("PlayCubeGameObject")
+        playCubeGameObject.addComponent(new PlayCubeComponent())
+        playCubeGameObject.transform.x = 230
+        playCubeGameObject.transform.y = 130
+        this.addGameObject(playCubeGameObject)
     }
 }
 
