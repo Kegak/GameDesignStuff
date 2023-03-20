@@ -6,11 +6,11 @@
 
 <body>
   <canvas id="canv"></canvas>
-  <script src="/engine/engine.js"></script>
-  <script src="/game/game.js"></script>
-  <script>
-    start("Game")
-  </script>
+  <script type="module">
+    import "/engine/engine.js"
+    import "./game.js"
+    SceneManager.startScenes(allScenes, "Game")
+</script>
 </body>
 
 </html>

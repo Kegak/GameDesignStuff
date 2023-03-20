@@ -1,17 +1,18 @@
+<!-- The main file for playing the pong game. -->
 <!DOCTYPE html>
 <html>
 
 <head>
-  <link href="/engine/engine.js" rel="stylesheet">
+    <link href="/engine/engine.css" rel="stylesheet">
 </head>
 
 <body>
-  <canvas id="canv"></canvas>
-  <script src="/engine/engine.js"></script>
-  <script src="./pong.js"></script>
-  <script>
-    start("Pong!!!")
-  </script>
+    <canvas id="canv"></canvas>
+    <script type="module">
+        import "/engine/engine.js"
+        import "./pong.js"
+        SceneManager.startScenes(allScenes, "Pong")
+    </script>
 </body>
 
 </html>
