@@ -22,8 +22,9 @@ class StartController extends Component {
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.fillStyle = "green";
         ctx.font = "40px Courier"
-        ctx.fillText("Game", 140, 100);
-        ctx.fillText("(press \"a\" to start)", 0, 150);
+        ctx.fillText("Death", 170, 100);
+        ctx.fillText("Before Dismount", 60, 150)
+        ctx.fillText("(press \'a\' to start)", 0, 200);
         
     }
   }
