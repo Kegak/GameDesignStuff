@@ -12,14 +12,6 @@ class Vector2 {
       this.x = x;
       this.y = y;
     }
-  
-    /**
-      * Unit tests for this class
-      */
-    static test() {
-      console.log("[Not Implemented]")
-    }
-  
   }
   
   window.Vector2 = Vector2

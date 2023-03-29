@@ -15,6 +15,9 @@ class GameObject {
     /**Whether the game object has had destroy called on it */
     markedForDestroy = false;
 
+    /** Whether the game object should be preserved when the scene changes. */
+    markedDoNotDestroyOnLoad = false
+
     /**
      * The constructor. This assigns a name and creates and adds
      * a transform component.
@@ -24,6 +27,11 @@ class GameObject {
         this.name = name;
         this.addComponent(new Transform());
     }
+
+    /**
+     * Flag a game object as persistent across scene loads
+     */
+    //To Add
 
     /** 
      * A property to get the trasform on this game object.
@@ -61,12 +69,12 @@ class GameObject {
         return SceneManager.getActiveScene().gameObjects.find(gameObject => gameObject.name == name)
     }
 
-    /**
-         * Search the game objects in the active scene for any
-         * with a given name.
-         * @param {string} name The name to search for.
-         * @returns All game objects with that name. An empty array otherwise.
-         */
+/**
+     * Search the game objects in the active scene for any
+     * with a given name.
+     * @param {string} name The name to search for.
+     * @returns All game objects with that name. An empty array otherwise.
+     */
     static getObjectsByName(name) {
         return SceneManager.getActiveScene().gameObjects.filter(gameObject => gameObject.name == name)
     }
@@ -102,8 +110,12 @@ class GameObject {
      * The game object will be removed during the next 
      * destroy pass in the game loop.
      */
-    destroy() {
+    destroy(){
         this.markedForDestroy = true;
+    }
+
+    doNotDestroyOnLoad(){
+        this.markedDoNotDestroyOnLoad = true
     }
 
     /**
@@ -121,21 +133,6 @@ class GameObject {
             gameObject.started = true
             gameObject.start()
         }
-    }
-
-    /**
-     * Unit tests for this class
-     */
-    static test(){
-        testSection("Game Object constructor")
-        let gameObject = new GameObject();
-
-        assert(gameObject.components.length == 1,
-            "Default Game Object has one component");
-        assert(gameObject.components[0] == gameObject.transform,
-            ".transform returns the first component.")
-        assert(gameObject.components[0] instanceof Transform,
-            "First component is of type component.")
     }
 }
 

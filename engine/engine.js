@@ -4,12 +4,17 @@ import "./Scene.js"
 import "./GameObject.js"
 import "./Transform.js"
 import "./Circle.js"
+import "./Camera.js"
 import "./Rectangle.js"
 import "./Line.js"
+import "./Text.js"
 import "./Vector2.js"
 
 //True if the gamee is paused, false otherwise
 let pause = false
+
+//Add an aspect ratio
+//Add logical coordinates
 
 //Handle favicon
 const link = document.createElement("link");
@@ -59,7 +64,7 @@ function mouseMove(e) {
 //Key up event handlers
 function keyUp(e) {
     keysDown[e.key] = false
-    
+
     //Pause functionality
     if (e.key == "p") {
         pause = !pause
@@ -73,7 +78,7 @@ function keyUp(e) {
 //If the user hold the key down ("repated keys")
 function keyDown(e) {
     keysDown[e.key] = true
-    
+
     //To prevent scrolling (if needed)
     //This has to be in keyDown, not keyup
     if (e.key == " ") {
@@ -93,7 +98,21 @@ function engineUpdate() {
     //Get a reference to the active scene.
     let scene = SceneManager.getActiveScene()
     if (SceneManager.changedSceneFlag && scene.start) {
+        let camera = scene.gameObjects[0]
         scene.gameObjects = []
+        scene.gameObjects.push(camera)
+
+        //Loop through the objects from the previous scene
+        //so can preserve some
+        let previousScene = SceneManager.getPreviousScene()
+        if (previousScene) {
+            for (let gameObject of previousScene.gameObjects) {
+                if (gameObject.markedDoNotDestroyOnLoad) {
+                    scene.gameObjects.push(gameObject)
+                }
+            }
+        }
+
         scene.start()
         SceneManager.changedSceneFlag = false
     }
@@ -120,8 +139,8 @@ function engineUpdate() {
 
     //Handle destroy here
     let keptGameObjects = []
-    for(let gameObject of scene.gameObjects){
-        if(!gameObject.markedForDestroy){
+    for (let gameObject of scene.gameObjects) {
+        if (!gameObject.markedForDestroy) {
             keptGameObjects.push(gameObject)
         }
     }
@@ -131,7 +150,7 @@ function engineUpdate() {
     for (let gameObject of scene.gameObjects) {
         for (let component of gameObject.components) {
             if (component.update) {
-                component.update()
+                component.update(ctx)
             }
         }
     }
@@ -148,14 +167,47 @@ function engineDraw() {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 
+
+
+    //Adjust for the camera
+    // ctx.fillStyle = Camera.main.getComponent("Camera").fillStyle;
+    // ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
     let scene = SceneManager.getActiveScene()
 
+    ctx.save();
+    //Now setup logical coordinates
+    //Center the camera
+    //Scale for logical coordinates
+    
+    //Scale for the camera
+    //translate for the camera
+    
     //Loop through the components and draw them.
     for (let gameObject of scene.gameObjects) {
         for (let component of gameObject.components) {
             if (component.draw) {
                 component.draw(ctx)
             }
+        }
+    }
+
+    ctx.restore();
+
+    //Check if it's too wide
+    //Calculate the letter boxing amount
+    //Fill the letter boxes
+
+    //Draw debugging information
+    let debug = false;
+    if (debug) {
+        let y = 50;
+        for (let gameObject of scene.gameObjects) {
+            ctx.fillStyle = "white"
+            ctx.font = "20px Courier"
+            let string = gameObject.name + " (" + gameObject.transform.x + "," + gameObject.transform.y + ")"
+            ctx.fillText(string, 50, y);
+            y += 20;
         }
     }
 }
@@ -178,121 +230,7 @@ function start(title) {
 
 }
 
-/**
- * Test the game. 
- * Runs a series of test on the game.
- * @param {string} title The title of the game. See start(title) for more details
- * @param {object} options The options object.
- * 
- * The options are as follows:
- * maxFrames: The number of frames to run in the test.
- * Note that teh default is 100 frames if maxFrames is not defined.
- */
-function test(title, options = {}) {
-    //Surround with a try so that if there is an error,
-    //We can display it in the browser
-    try {
-        //Set the title
-        document.title = title;
 
-        //Set maxFrames to either the parameter passed in
-        //or the default value otherwise.
-        let maxFrames = options.maxFrames ? options.maxFrames : 100;
-        
-        //Emulate the game loop by running for a set number of iterations
-        for (let i = 0; i < maxFrames; i++) {
-            engineUpdate();
-            engineDraw();
-        }
-        
-        //Call the done function if provided
-        if (options.done) {
-            options.done(ctx);
-        }
-    } catch (exception) {
-        //Update the browser window to show that there is an error.
-        failTest("Error in test(): " + exception, false)
-
-        //Rethrow the exception so the user can know what line the error
-        //is on, etc.
-        throw exception;
-    }
-
-    //Call the done function if provided
-        if (options.done) {
-            options.done(ctx);
-        }
-}
-
-//Called when tests fail.
-function failTest(description, needsToBeThrown = true) {
-    //Draw a red x if a test failed.
-    ctx.font = "20px Courier"
-    ctx.fillText("❌", testOffset, 20)
-    testOffset += nextOffset;
-    if(needsToBeThrown)
-        throw description
-}
-
-//Set to truthy if we want to see the name of each test that was passed
-//If false, only the final result (passed or failed) is displayed
-//without poluting the console.
-let verboseDebug = true;
-
-//Called when a test is passed
-function passTest(description) {
-    //Output the result to the console 
-    //if verbose debugging is on.
-    ctx.font = "20px Courier"
-    ctx.fillText("✅", testOffset, 20)
-    testOffset += nextOffset
-    if (verboseDebug) {
-        console.log("Passed test: " + description)
-    }
-}
-
-//Called when all tests are passed.
-//Draw a green checkmark in the browser
-//if all tests were passed
-function passTests() {
-    ctx.font = "20px Courier"
-    ctx.fillText("🏁", 5, 20)
-    testOffset += nextOffset
-    console.log("Called passTests")
-}
-
-/**
- * Simple unit test function.
- * If the first parameter evaluates to true, 
- * the test passes.
- * Otherwise, the test fails.
- * @param {boolean} boolean 
- * @param {string} description 
- */
-function assert(boolean, description = "[No description set]") {
-    //Handle the failed test case
-    if (!boolean) {
-        failTest(description)
-    }
-    //Handle the passed test case
-    else {
-            passTest(description)
-    }
-}
-
-function expectException(call, description=""){
-    try{
-        call()
-        failTest(description)
-    }
-    catch(e){
-        passTest(description);
-    }
-}
-
-function testSection(description){
-    console.log("Begining test section " + description)
-}
 
 //Add certain functions to the global namespace
 //This allows us to call these functions without
@@ -301,19 +239,11 @@ function testSection(description){
 /** Start the game in 'play mode1 */
 window.start = start;
 
-/** Start the test.*/
-window.test = test;
+/** Expose the update calls for the testing routines */
+window.engineUpdate = engineUpdate;
+window.engineDraw = engineDraw;
 
-/** A reference to our unit test function */
-window.assert = assert;
 
-/** A refence to a function that marks the beginning of a set of related tests. */
-window.testSection = testSection;
-
-/** A reference to the pass tests function. 
- * Called by test code when all tests have passed 
- * */
-window.passTests = passTests
 
 /** The state of the keyboard.. */
 window.keysDown = keysDown;

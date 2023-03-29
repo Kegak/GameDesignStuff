@@ -3,70 +3,117 @@ import "/engine/engine.js"
 //-----------------------------------------------------
 //Start
 
+let reset = true
+
+class PersistentPointsComponent extends Component {
+    name = "PersistentPointsComponent"
+    points = 0
+    start() {
+        // if(GameObject.getObjectByName("PersistentPointsGameObject") != this.parent){
+        //     this.parent.destroy();
+        //     console.log("Removing duplicate persistent points component");
+        // }
+        // else{
+        //     console.log("Only one persistent points component. Move on.")
+        // }
+    }
+    updatePoints(points) {
+        this.points = points;
+        document.cookie = this.points;
+    }
+}
+
 class StartController extends Component {
     start() {
         this.freezeTime = 0
         this.maxFreezeTime = 1
+        GameObject.getObjectByName("PersistentPointsGameObject").doNotDestroyOnLoad()
+
     }
     update() {
         this.freezeTime += 25 / 1000
         if (keysDown["a"] && this.freezeTime >= this.maxFreezeTime) {
             SceneManager.changeScene(1)
         }
+
     }
+
 }
 
-class StartDrawComponent extends Component {
-    draw(ctx) {
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.fillStyle = "white";
-        ctx.font = "40px Courier"
-        ctx.fillText("Welcome to Pong", 100, 100);
-    }
-}
-
-class StartControllerGameObject extends GameObject {
+class ScoreSetterComponent extends Component {
+    name = "ScoreSetterComponent"
     start() {
-        this.addComponent(new StartController())
+        this.maxScoreComponent = this.parent.getComponent("Text");
     }
+    update() {
+        let persistentPointsGameObject = GameObject.getObjectByName("PersistentPointsGameObject");
 
+        if (persistentPointsGameObject) {
+
+            this.maxScoreComponent.string = "Max Score: "
+
+            let persistentPointsComponent = persistentPointsGameObject
+                .getComponent("PersistentPointsComponent")
+
+            this.maxScoreComponent.string += persistentPointsComponent.points
+        }
+    }
 }
 
-class StartDrawGameObject extends GameObject {
+class StartCameraComponent extends Component {
     start() {
-        this.addComponent(new StartDrawComponent());
-    }
 
+    }
+    update() {
+        // this.parent.transform.x += 1;
+        // this.parent.transform.sx = 10;
+        // this.parent.transform.sy = 10;
+    }
 }
 
 class StartScene extends Scene {
+    constructor() {
+        super("black")
+    }
     start() {
-        this.addGameObject(new StartControllerGameObject())
-        this.addGameObject(new StartDrawGameObject())
+        this.addGameObject(new GameObject("StartConttrollerGameObject").addComponent(new StartController()))
+        this.addGameObject(new GameObject("PersistentPointsGameObject").addComponent(new PersistentPointsComponent()))
+        this.addGameObject(new GameObject("WelcomeToPongGameObject").addComponent(new Text("Welcome to Pong", "white")), new Vector2(15, 20))
+        this.addGameObject(new GameObject("MaxScoreGameObject").addComponent(new Text("", "white")).addComponent(new ScoreSetterComponent()), new Vector2(15, 45))
+        // Camera.main.addComponent(new StartCameraComponent());
     }
 }
 
 //-----------------------------------------------------
 //Main
 
+class MainCameraComponent extends Component{
+    start(){
+
+    }
+    update(){
+        this.transform.x = 75;
+         this.transform.y = 75;
+         this.transform.sx = 3;
+         this.transform.sy = 3;
+    }
+}
+
 class MainController extends Component {
     start() {
-        let pointsComponent = GameObject.getObjectByName("PointsGameObject").getComponent("PointsComponent");
-
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 1; i++) {
             //Create a new pong ball
             let ballGameObject = new GameObject("BallGameObject")
             let ballComponent = new BallComponent();
             ballComponent.addListener(this)
-            ballComponent.addListener(pointsComponent)
+            ballComponent.addListener(GameObject.getObjectByName("PointsGameObject").getComponent("PointsComponent"))
             ballGameObject.addComponent(ballComponent)
 
             let circle = new Circle()
             ballGameObject.addComponent(circle)
             circle.fillStyle = "yellow"
             circle.transform.sx = 5
-            circle.transform.x = -15*i
+            circle.transform.x = -15 * i
             GameObject.instantiate(ballGameObject)
         }
     }
@@ -80,7 +127,6 @@ class MainController extends Component {
                     countLive++;
                 }
             }
-
             if (countLive == 0) {
                 SceneManager.changeScene(2)
             }
@@ -93,28 +139,27 @@ class PointsComponent extends Component {
     start() {
         this.points = 0
     }
-    handleUpdate(component, eventName){
-        if(eventName == "Rebound"){
+    handleUpdate(component, eventName) {
+        if (eventName == "Rebound") {
             this.points++;
+            let persistentPointsComponent = GameObject
+                .getObjectByName("PersistentPointsGameObject")
+                .getComponent("PersistentPointsComponent")
+            if (this.points > persistentPointsComponent.points) {
+                persistentPointsComponent.updatePoints(this.points)
+            }
         }
     }
     update() {
-
+        this.parent.getComponent("Text").string = "Game Points: " + this.points;
     }
-    draw(ctx) {
 
-        //View part of MVC
-        ctx.fillStyle = "green"
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-
-        ctx.fillStyle = "white"
-        ctx.fillText(this.points, this.transform.x, this.transform.y);
-    }
 }
+
 class BallComponent extends Component {
     name = "BallComponent"
     start() {
-        this.margin = 20;
+        this.margin = 50;
         this.size = 100;
         this.transform.x = this.margin + this.size / 2 + this.transform.x
         this.transform.y = this.margin + this.size / 2
@@ -128,11 +173,6 @@ class BallComponent extends Component {
         let paddleWidth = paddleComponent.paddleWidth;
         let paddleX = paddleComponent.transform.x;
 
-        // let pointsGameObject = GameObject.getObjectByName("PointsGameObject");
-        // let pointsComponent = pointsGameObject.getComponent("PointsComponent");
-
-
-
         //Model of MVC
         this.transform.x += this.pongVX
         this.transform.y += this.pongVY
@@ -144,7 +184,6 @@ class BallComponent extends Component {
             //Check for a collision with the paddle
             if (paddleX - paddleWidth / 2 <= this.transform.x && paddleX + paddleWidth / 2 >= this.transform.x) {
                 this.pongVY *= -1
-                //pointsComponent.points++
                 this.updateListeners("Rebound")
             }
             else {
@@ -164,7 +203,7 @@ class BallComponent extends Component {
 class PaddleComponent extends Component {
     name = "PaddleComponent"
     start() {
-        this.margin = 20;
+        this.margin = 50;
         this.size = 100;
         this.transform.x = this.margin + this.size / 2
         this.paddleWidth = 40;
@@ -189,25 +228,21 @@ class PaddleComponent extends Component {
         }
     }
     draw(ctx) {
-
-
         //Now draw the paddle
         ctx.beginPath()
         ctx.moveTo(this.transform.x - this.paddleWidth / 2, this.margin + this.size)
         ctx.lineTo(this.transform.x + this.paddleWidth / 2, this.margin + this.size)
         ctx.stroke()
-
     }
 }
 
 class WallsComponent extends Component {
     name = "WallsComponent"
     start() {
-        this.margin = 20;
+        this.margin = 50;
         this.size = 100;
     }
     draw(ctx) {
-
         ctx.strokeStyle = "black"
         ctx.beginPath()
         ctx.moveTo(this.margin, this.margin)
@@ -220,18 +255,26 @@ class WallsComponent extends Component {
 }
 
 class MainScene extends Scene {
+    constructor() {
+        super("green")
+    }
     start() {
-        let pointsGameObject = new GameObject("PointsGameObject")
-        let pointsComponent = new PointsComponent()
-        pointsGameObject.addComponent(pointsComponent)
-        pointsGameObject.transform.x = 0
-        pointsGameObject.transform.y = 10
-        this.addGameObject(pointsGameObject)
+        this.addGameObject(
+            new GameObject("PointsGameObject")
+                .addComponent(new PointsComponent())
+                .addComponent(new Text("Game Points: 0", "black")),
+            new Vector2(15, 17))
 
+        this.addGameObject(
+            new GameObject("MaxPointsGameObject")
+                .addComponent(new ScoreSetterComponent())
+                .addComponent(new Text("", "black")),
+            new Vector2(15, 37))
 
         this.addGameObject(new GameObject("PaddleGameObject").addComponent(new PaddleComponent()))
         this.addGameObject(new GameObject("WallsGameObject").addComponent(new WallsComponent()))
         this.addGameObject(new GameObject("ControllerGameObject").addComponent(new MainController()))
+        // Camera.main.addComponent(new MainCameraComponent());
     }
 }
 
@@ -246,19 +289,19 @@ class EndController extends Component {
     }
 }
 
-class EndDrawComponent extends Component {
-    draw(ctx) {
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.fillStyle = "red";
-        ctx.fillText("You died", 100, 100);
-    }
-}
-
 class EndScene extends Scene {
+    constructor() {
+        super("Black")
+    }
     start() {
-        this.addGameObject(new GameObject().addComponent(new EndController()))
-        this.addGameObject(new GameObject().addComponent(new EndDrawComponent()))
+        this.addGameObject(new GameObject("EndControllerGameObject").addComponent(new EndController()))
+        this.addGameObject(new GameObject("EndTextGameObject").addComponent(new Text("You Died", "red")), new Vector2(15, 20))
+        this.addGameObject(
+            new GameObject("MaxPointsGameObject")
+                .addComponent(new ScoreSetterComponent())
+                .addComponent(new Text("", "red")),
+            new Vector2(15, 37))
+
     }
 }
 

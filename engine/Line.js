@@ -1,5 +1,3 @@
-
-
 /**
  * A circle engine-level component
  */
@@ -40,13 +38,6 @@ class Line extends Component {
       ctx.moveTo(endX, endY);
       ctx.lineTo(startX, startY);
       ctx.stroke()
-    }
-  
-    /**
-      * Unit tests for this class
-      */
-    static test() {
-      console.log("[Not Implemented]")
     }
   }
   

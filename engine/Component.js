@@ -63,14 +63,6 @@ class Component{
     }
     //Since we do not have "set transform(newTransform)" 
     //transform is read-only
-  
-    /**
-      * Unit tests for this class
-      */
-    static test() {
-      console.log("[Not Implemented]")
-    }
   }
   
   window.Component = Component;
-  

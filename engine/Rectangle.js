@@ -37,13 +37,6 @@ class Rectangle extends Component {
       ctx.fill()
       ctx.stroke()
     }
-  
-    /**
-      * Unit tests for this class
-      */
-    static test() {
-      console.log("[Not Implemented]")
-    }
   }
   
   //Add rectangle to the global namespace.
