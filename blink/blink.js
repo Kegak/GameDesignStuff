@@ -41,12 +41,12 @@ class BlinkComponent extends Component {
     }
     /**
      * Draw the color to the screen.
-     * @param {The drawing context.} ctx 
+     * @param {CanvasDrawingContext2D} ctx 
      */
     draw(ctx) {
         ctx.fillStyle = `rgb(0, ${this.time} ,0)`
 
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        ctx.fillRect(-50, -50, 100, 100)
     }
 }
 

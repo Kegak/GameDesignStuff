@@ -1,27 +1,43 @@
 /**
- * The scene class.
- * 
- * Scenes are containers for game objects.
- * See https://docs.unity3d.com/Manual/CreatingScenes.html
+ * A circle engine-level component
  */
-class Scene {
-    /** List of game objects in the scene */
-    gameObjects = []
+class Rectangle extends Component {
+    /** The name of the component */
+    name = "Rectangle"
+  
+    /** The fill color. Defaults to white. */
+    fillStyle
+  
+    /** The color of the stroke. Defaults to transparent. */
+    strokeStyle
+  
+    /** The width of the stroke */
+    lineWidth
+  
+    constructor(fillStyle = "white", strokeStyle = "transparent", lineWidth = 1){
+      super()
+      this.fillStyle = fillStyle;
+      this.strokeStyle = strokeStyle
+      this.lineWidth = lineWidth
+    }
   
     /**
-     * Add a game object to a scene.
-     * Eventually we will switch to using Instantiate
-     * See https://docs.unity3d.com/ScriptReference/Object.Instantiate.html
-     * 
-     * @param {GameObject} gameObject The game object to add
+     * Draw the rectangle to the given context.
+     * @param {2DContext} ctx The context to draw to.
      */
-    addGameObject(gameObject){
-        this.gameObjects.push(gameObject);
-        if(gameObject.start && !gameObject.started){
-            gameObject.started = true
-            gameObject.start()
-        }
+    draw(ctx) {
+      //Set the fill style
+      ctx.fillStyle = this.fillStyle
+      ctx.strokeStyle = this.strokeStyle
+      ctx.lineWidth = this.lineWidth
+  
+      // Draw the rectangle
+      ctx.beginPath()
+      ctx.rect(-this.transform.sx/2 + this.transform.x, -this.transform.sy/2 + this.transform.y,this.transform.sx, this.transform.sy);
+      ctx.fill()
+      ctx.stroke()
     }
   }
   
-  window.Scene = Scene;
+  //Add rectangle to the global namespace.
+  window.Rectangle = Rectangle;

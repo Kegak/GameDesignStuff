@@ -18,6 +18,8 @@ class GameObject {
     /** Whether the game object should be preserved when the scene changes. */
     markedDoNotDestroyOnLoad = false
 
+    layer = 0
+
     /**
      * The constructor. This assigns a name and creates and adds
      * a transform component.
@@ -97,7 +99,7 @@ class GameObject {
      * 
      * Note that the Unity API takes a type as a generic argument. Since JS lacks this 
      * functionality, we use the name instead.
-     * @param {string} name 
+     * @param {string} name The name of the component to look for.
      * @returns The first game objecte with the name. Undefined if no
      * component is found.
      */
@@ -125,7 +127,7 @@ class GameObject {
      * 
      * The game object is added to the scene, and if the game object
      * has a start function, start is called.
-     * @param {GameObject} gameObject 
+     * @param {GameObject} gameObject The game object to instantiate
      */
     static instantiate(gameObject) {
         SceneManager.getActiveScene().gameObjects.push(gameObject);
