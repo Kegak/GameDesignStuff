@@ -1,4 +1,7 @@
 //The code for the blink game
+class Globals{
+    static score = 0
+}
 
 //Start by importing the engine
 //To match Unity, we use an import with side effects

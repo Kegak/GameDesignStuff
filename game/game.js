@@ -19,12 +19,12 @@ class StartController extends Component {
   class StartDrawComponent extends Component {
     draw(ctx) {
         ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillRect(-50, -30, ctx.canvas.width, ctx.canvas.height);
         ctx.fillStyle = "green";
-        ctx.font = "40px Courier"
-        ctx.fillText("Death", 170, 100);
-        ctx.fillText("Before Dismount", 60, 150)
-        ctx.fillText("(press \'a\' to start)", 0, 200);
+        ctx.font = "8px Courier"
+        ctx.fillText("Death", -20, -10);
+        ctx.fillText("Before Dismount", -40, 0)
+        ctx.fillText("(press \'a\' to start)", -50, 10);
         
     }
   }
@@ -66,11 +66,8 @@ class MainController extends Component {
 
 class MainDrawComponent extends Component{
     draw(ctx){
-        ctx.fillStyle = "rgb(135, 206, 235)";
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
         ctx.fillStyle = "black"
-        ctx.fillRect(0,0, 500, 300)
+        ctx.fillRect(-50,-30, 100, 60)
     }
 }
 
@@ -89,58 +86,60 @@ class MainDrawGameObject extends GameObject{
 class TrackComponent extends Component{
     name = "TrackComponent"
     start(){
-        this.cubeSide = 40
+        this.cubeSide = 5
         this.position = 0
+        this.transform.x = -5
+        this.transform.y -5
     }
     update(){
         if (keysDown["ArrowLeft"] && keysDown["ArrowUp"]){
-            this.transform.x -= 3;
-            this.transform.y -= 3
+            this.transform.x -= 1;
+            this.transform.y -= 1
             this.position = 0
         }
         else if (keysDown["ArrowLeft"] && keysDown["ArrowDown"]){
-            this.transform.x -= 3;
-            this.transform.y += 3
+            this.transform.x -= 1;
+            this.transform.y += 1
             this.position = 2
         }
         else if (keysDown["ArrowRight"] && keysDown["ArrowUp"]){
-            this.transform.x += 3;
-            this.transform.y -= 3
+            this.transform.x += 1;
+            this.transform.y -= 1
             this.position = 0
         }
         else if (keysDown["ArrowRight"] && keysDown["ArrowDown"]){
-            this.transform.x += 3;
-            this.transform.y += 3
+            this.transform.x += 1;
+            this.transform.y += 1
             this.position = 2
         }
         else if (keysDown["ArrowLeft"]) {
-            this.transform.x -= 3;
+            this.transform.x -= 1;
             this.position = 3
         }
         else if (keysDown["ArrowRight"]) {
-            this.transform.x += 3
+            this.transform.x += 1
             this.position = 1
         }   
         else if (keysDown["ArrowUp"]) {
-            this.transform.y -= 3
+            this.transform.y -= 1
             this.position = 0
         }
         else if (keysDown["ArrowDown"]) {
-            this.transform.y += 3
+            this.transform.y += 1
             this.position = 2
         }
 
-        if (this.transform.x <= 0){
-            this.transform.x = 0
+        if (this.transform.x <= -50){
+            this.transform.x = -50
         }
-        if (this.transform.x >= 460){
-            this.transform.x = 460
+        if (this.transform.x >= 45){
+            this.transform.x = 45
         }
-        if (this.transform.y <= 0){
-            this.transform.y = 0
+        if (this.transform.y <= -28.5){
+            this.transform.y = -28.5
         }
-        if (this.transform.y >= 260){
-            this.transform.y = 260
+        if (this.transform.y >= 23.5){
+            this.transform.y = 23.5
         }
     }
     draw(ctx){
@@ -152,58 +151,60 @@ class TrackComponent extends Component{
 class TurretComponent extends Component{
     name = "TurretComponent"
     start(){
-        this.cubeSide = 20
+        this.cubeSide = 2
         this.position = 0
+        this.transform.x = -3.5
+        this.transform.y = 1.5
     }
     update(){
         if (keysDown["ArrowLeft"] && keysDown["ArrowUp"]){
-            this.transform.x -= 3;
-            this.transform.y -= 3
+            this.transform.x -= 1;
+            this.transform.y -= 1
             this.position = 0
         }
         else if (keysDown["ArrowLeft"] && keysDown["ArrowDown"]){
-            this.transform.x -= 3;
-            this.transform.y += 3
+            this.transform.x -= 1;
+            this.transform.y += 1
             this.position = 2
         }
         else if (keysDown["ArrowRight"] && keysDown["ArrowUp"]){
-            this.transform.x += 3;
-            this.transform.y -= 3
+            this.transform.x += 1;
+            this.transform.y -= 1
             this.position = 0
         }
         else if (keysDown["ArrowRight"] && keysDown["ArrowDown"]){
-            this.transform.x += 3;
-            this.transform.y += 3
+            this.transform.x += 1;
+            this.transform.y += 1
             this.position = 2
         }
         else if (keysDown["ArrowLeft"]) {
-            this.transform.x -= 3;
+            this.transform.x -= 1;
             this.position = 3
         }
         else if (keysDown["ArrowRight"]) {
-            this.transform.x += 3
+            this.transform.x += 1
             this.position = 1
         }   
         else if (keysDown["ArrowUp"]) {
-            this.transform.y -= 3
+            this.transform.y -= 1
             this.position = 0
         }
         else if (keysDown["ArrowDown"]) {
-            this.transform.y += 3
+            this.transform.y += 1
             this.position = 2
         }
 
-        if (this.transform.x <= 10){
-            this.transform.x = 10
+        if (this.transform.x <= -48.5){
+            this.transform.x = -48.5
         }
-        if (this.transform.x >= 470){
-            this.transform.x = 470
+        if (this.transform.x >= 46.5){
+            this.transform.x = 46.5
         }
-        if (this.transform.y <= 10){
-            this.transform.y = 10
+        if (this.transform.y <= -27){
+            this.transform.y = -27
         }
-        if (this.transform.y >= 270){
-            this.transform.y = 270
+        if (this.transform.y >= 25){
+            this.transform.y = 25
         }
     }
     draw(ctx){
@@ -215,51 +216,53 @@ class TurretComponent extends Component{
 class GunComponent extends Component{
     name = "GunComponent"
     start(){
-        this.gunLength = 20
-        this.gunHeight = 10
+        this.gunLength = 2
+        this.gunHeight = 1
+        this.transform.x = -0.5
+        this.transform.y = 4.5
     }
     update(){
         if (keysDown["ArrowLeft"] && keysDown["ArrowUp"]){
-            this.transform.x -= 3;
-            this.transform.y -= 3
+            this.transform.x -= 1;
+            this.transform.y -= 1
         }
         else if (keysDown["ArrowLeft"] && keysDown["ArrowDown"]){
-            this.transform.x -= 3;
-            this.transform.y += 3
+            this.transform.x -= 1;
+            this.transform.y += 1
         }
         else if (keysDown["ArrowRight"] && keysDown["ArrowUp"]){
-            this.transform.x += 3;
-            this.transform.y -= 3
+            this.transform.x += 1;
+            this.transform.y -= 1
         }
         else if (keysDown["ArrowRight"] && keysDown["ArrowDown"]){
-            this.transform.x += 3;
-            this.transform.y += 3
+            this.transform.x += 1;
+            this.transform.y += 1
         }
         else if (keysDown["ArrowLeft"]) {
-            this.transform.x -= 3;
+            this.transform.x -= 1;
         }
         else if (keysDown["ArrowRight"]) {
-            this.transform.x += 3
+            this.transform.x += 1
             
         }
         else if (keysDown["ArrowUp"]) {
-            this.transform.y -= 3
+            this.transform.y -= 1
         }
         else if (keysDown["ArrowDown"]) {
-            this.transform.y += 3
+            this.transform.y += 1
         }
 
-        if (this.transform.x <= 40){
-            this.transform.x = 40
+        if (this.transform.x <= -45.5){
+            this.transform.x = -45.5
         }
-        if (this.transform.x >= 500){
-            this.transform.x = 500
+        if (this.transform.x >= 49.5){
+            this.transform.x = 49.5
         }
-        if (this.transform.y <= 15){
-            this.transform.y = 15
+        if (this.transform.y <= -24){
+            this.transform.y = -24
         }
-        if (this.transform.y >= 275){
-            this.transform.y = 275
+        if (this.transform.y >= 28){
+            this.transform.y = 28
         }
 
     }
@@ -269,16 +272,16 @@ class GunComponent extends Component{
         ctx.fillStyle = "green"
         
         if (trackComponent.position == 2){
-            ctx.fillRect(this.transform.x - 25, this.transform.y + 15, this.gunHeight, this.gunLength)
+            ctx.fillRect(this.transform.x - 2.5, this.transform.y-1, this.gunHeight, this.gunLength)
         }
         else if (trackComponent.position == 0){
-            ctx.fillRect(this.transform.x - 25, this.transform.y-25, this.gunHeight, this.gunLength)
+            ctx.fillRect(this.transform.x-2.5, this.transform.y-5, this.gunHeight, this.gunLength)
         }
         else if (trackComponent.position == 3){
-            ctx.fillRect(this.transform.x-50, this.transform.y, this.gunLength, this.gunHeight)
+            ctx.fillRect(this.transform.x-5, this.transform.y-2.5, this.gunLength, this.gunHeight)
         }
         else if (trackComponent.position == 1){
-            ctx.fillRect(this.transform.x-10, this.transform.y, this.gunLength, this.gunHeight)
+            ctx.fillRect(this.transform.x-1, this.transform.y-2.5, this.gunLength, this.gunHeight)
         }
         
     }
@@ -290,11 +293,8 @@ class BulletComponent extends Component{
     start(){
      this.fired = false
 
-     let gunGameObject = GameObject.getObjectByName("GunGameObject")
-     let gunComponent = gunGameObject.getComponent("GunComponent")
-
-     this.transform.x = gunComponent.transform.x
-     this.transform.y = gunComponent.transform.y
+     this.transform.x = -0.5
+    this.transform.y = 4.5
 
     }
     update(){
@@ -318,35 +318,35 @@ class BulletComponent extends Component{
 
         if (this.fired == true){
             if (this.position == 0){
-                this.transform.y -= 5
+                this.transform.y -= 1
             }
             if (this.position == 1){
-                this.transform.x += 5
+                this.transform.x += 1
             }
             if (this.position == 2){
-                this.transform.y += 5
+                this.transform.y += 1
             }
             if (this.position == 3){
-                this.transform.x -= 5
+                this.transform.x -= 1
             }
         }
         
-        if (this.transform.x < 40){
+        if (this.transform.x < -50){
             this.fired = false
             this.transform.x = gunComponent.transform.x
             this.transform.y = gunComponent.transform.y
         }
-        if (this.transform.x > 500){
+        if (this.transform.x > 50){
             this.fired = false
             this.transform.x = gunComponent.transform.x
             this.transform.y = gunComponent.transform.y
         }
-        if (this.transform.y < 15){
+        if (this.transform.y < -30){
             this.fired = false
             this.transform.x = gunComponent.transform.x
             this.transform.y = gunComponent.transform.y
         }
-        if (this.transform.y > 280){
+        if (this.transform.y > 30){
             this.fired = false
             this.transform.x = gunComponent.transform.x
             this.transform.y = gunComponent.transform.y
@@ -356,53 +356,94 @@ class BulletComponent extends Component{
         if (this.fired == true){
             
             ctx.fillStyle = "white"
-            if (this.position == 2){
-                ctx.fillRect(this.transform.x - 23, this.transform.y + 30, 5, 5)
-            }
-            else if (this.position == 0){
-                ctx.fillRect(this.transform.x - 23, this.transform.y-25, 5, 5)
-            }
-            else if (this.position == 3){
-                ctx.fillRect(this.transform.x-50, this.transform.y + 2, 5, 5)
+            if (this.position == 0){
+                ctx.fillRect(this.transform.x-2.2, this.transform.y-4.5, .5, .5)
             }
             else if (this.position == 1){
-                ctx.fillRect(this.transform.x+6, this.transform.y + 2, 5, 5)
+                ctx.fillRect(this.transform.x+.1, this.transform.y-2.2, .5, .5)
+            }
+            else if (this.position == 2){
+                ctx.fillRect(this.transform.x-2.2, this.transform.y, .5, .5)
+            }
+            else if (this.position == 3){
+                ctx.fillRect(this.transform.x-4.4, this.transform.y-2.2, .5, .5)
             }
         }
     }
         
 }
 
-
+class CrunchyComponent extends Component{
+    name = "CrunchyComponent"
+    start(){
+        this.cubeSide = 2
+        this.transform.x = 20
+        this.transform.y = 20
+    }
+    update(){
+        let turretGameObject = GameObject.getObjectByName("TurretGameObject")
+        let turretComponent = turretGameObject.getComponent("TurretComponent")
+        let bulletGameObject = GameObject.getObjectByName("BulletGameObject")
+        let bulletComponet = bulletGameObject.getComponent("BulletComponent")
+        if (turretComponent.transform.x > this.transform.x){
+            this.transform.x += 0.2
+        }
+        if (turretComponent.transform.x < this.transform.x){
+            this.transform.x -= 0.2
+        }
+        if (turretComponent.transform.y > this.transform.y){
+            this.transform.y += 0.2
+        }
+        if (turretComponent.transform.y < this.transform.y){
+            this.transform.y -= 0.2
+        }
+        if ((turretComponent.transform.x >= this.transform.x-2 && turretComponent.transform.x <= this.transform.x+2) && (turretComponent.transform.y >= this.transform.y-2 && turretComponent.transform.y <= this.transform.y+2)){
+            this.parent.destroy()
+        }
+        
+        
+        if (bulletComponet.fired == true && (this.transform.y+2 <= bulletComponet.transform.y && this.transform.x+2 <= bulletComponet.transform.x)){
+            this.parent.destroy()
+            bulletComponet.fired = false
+            
+        }
+    }
+    draw(ctx){
+        
+        ctx.fillStyle = "Yellow"
+        ctx.fillRect(this.transform.x, this.transform.y, this.cubeSide, this.cubeSide)
+    }
+}
 
 class MainScene extends Scene {
     start() {
         this.addGameObject(new MainControllerGameObject())
         this.addGameObject(new MainDrawGameObject())
+
+        let crunchyGameObject = new GameObject("CrunchyGameObject")
+        crunchyGameObject.addComponent(new CrunchyComponent())
+        this.addGameObject(crunchyGameObject)
+
         let trackGameObject = new GameObject("TrackGameObject")
         trackGameObject.addComponent(new TrackComponent())
-        trackGameObject.transform.x = 230
-        trackGameObject.transform.y = 130
+        
         this.addGameObject(trackGameObject)
 
         
         let turretGameObject = new GameObject("TurretGameObject")
         turretGameObject.addComponent(new TurretComponent())
-        turretGameObject.transform.x = 240
-        turretGameObject.transform.y = 140
         this.addGameObject(turretGameObject)
 
         let gunGameObject = new GameObject("GunGameObject")
         gunGameObject.addComponent(new GunComponent())
-        gunGameObject.transform.x = 270
-        gunGameObject.transform.y = 145
         this.addGameObject(gunGameObject)
 
         let bulletGameObject = new GameObject("BulletGameObject")
         bulletGameObject.addComponent(new BulletComponent())
-        bulletGameObject.transform.x = 270
-        bulletGameObject.transform.y = 145
         this.addGameObject(bulletGameObject)
+
+        
+
     }
 }
 

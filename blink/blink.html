@@ -1,16 +1,19 @@
+<!-- The main file for playing the blink game. -->
+<!DOCTYPE html>
 <html>
 
 <head>
-  <link href="/engine/engine.css" rel="stylesheet">
+    <link href="/engine/engine.css" rel="stylesheet">
 </head>
 
 <body>
-  <canvas id="canv"></canvas>
-  <script src="/engine/engine.js"></script>
-  <script src="./blink.js"></script>
-  <script>
-    start("Blink")
-  </script>
+    <canvas id="canv"></canvas>
+    <script type="module">
+        import "/engine/engine.js"
+        import mainScene from "./blink.js"
+        SceneManager.addScene(mainScene);
+        start("Blink", {aspectRatio:1, logicalWidth:100, letterboxColor:"transparent"})
+    </script>
 </body>
 
 </html>

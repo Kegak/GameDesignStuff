@@ -6,10 +6,19 @@ import "./Transform.js"
 import "./Circle.js"
 import "./Camera.js"
 import "./Rectangle.js"
+import "./GUIRectangle.js"
 import "./Line.js"
 import "./Text.js"
 import "./Vector2.js"
 import "./Time.js"
+import "./Input.js"
+
+class EngineGlobals{
+    static requestedAspectRatio = 16/9;
+    static logicalWidth = 1;
+}
+
+window.EngineGlobals = EngineGlobals;
 
 //True if the gamee is paused, false otherwise
 let pause = false
@@ -180,8 +189,6 @@ function update() {
 
 }
 
-let requestedAspectRatio = 16/9
-let logicalWidth = 1
 let letterboxColor = "gray"
 
 /**
@@ -195,44 +202,48 @@ function draw() {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
 
-    let browserAspectRatio = canvas.width/canvas.height;
+    let browserAspectRatio = canvas.width / canvas.height;
     let offsetX = 0;
     let offsetY = 0;
     let browserWidth = canvas.width
-    if(requestedAspectRatio > browserAspectRatio){
-        let desiredHeight = canvas.width/requestedAspectRatio;
-        let amount = (canvas.height-desiredHeight)/2;
+    if (EngineGlobals.requestedAspectRatio > browserAspectRatio) {
+        let desiredHeight = canvas.width / EngineGlobals.requestedAspectRatio;
+        let amount = (canvas.height - desiredHeight) / 2;
         offsetY = amount;
     }
-    else{
-        let desiredWidth = canvas.height * requestedAspectRatio
-        let amount = (canvas.width-desiredWidth)/2;
-        offsetX =  amount
-        browserWidth -= 2*amount
+    else {
+        let desiredWidth = canvas.height * EngineGlobals.requestedAspectRatio
+        let amount = (canvas.width - desiredWidth) / 2;
+        offsetX = amount
+        browserWidth -= 2 * amount
     }
 
 
     let scene = SceneManager.getActiveScene()
 
     ctx.save();
-    let logicalScaling = browserWidth/logicalWidth
-    ctx.translate(ctx.canvas.width/2, ctx.canvas.height/2)
-    ctx.scale(logicalScaling,logicalScaling)
-    
+    let logicalScaling = browserWidth / EngineGlobals.logicalWidth
+    ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
+    ctx.scale(logicalScaling, logicalScaling)
+
     ctx.translate(-Camera.main.transform.x, -Camera.main.transform.y)
 
 
     //Calculate the min and max layer
     //Map/Reduce
-    let min = scene.gameObjects.map(go => go.layer).reduce((previous, current)=> Math.min(previous,current))
+    let min = scene.gameObjects.filter(go=>go.components.some(c=>c.draw))
+    .map(go => go.layer)
+    .reduce((previous, current)=>Math.min(previous, current))
 
-    let max = scene.gameObjects.map(go => go.layer).reduce((previous, current)=> Math.max(previous,current))
-    
+    let max = scene.gameObjects
+    .map(go => go.layer)
+    .reduce((previous, current)=>Math.max(previous, current))
+
     //Loop through the components and draw them.
-    for (let i = min; i<=max; i++){
+    for (let i = min; i <= max; i++) {
         let gameObjects = scene.gameObjects.filter(go=>go.layer==i)
 
-        for (let gameObject of scene.gameObjects) {
+        for (let gameObject of gameObjects) {
             for (let component of gameObject.components) {
                 if (component.draw) {
                     component.draw(ctx)
@@ -243,24 +254,55 @@ function draw() {
 
     ctx.restore();
 
-    if(requestedAspectRatio > browserAspectRatio){
-        let desiredHeight = canvas.width/requestedAspectRatio;
-        let amount = (canvas.height-desiredHeight)/2;
+
+    //Now draw the letterboxes
+    let zeroX = 0;
+    let zeroY = 0;
+    if (EngineGlobals.requestedAspectRatio > browserAspectRatio) {
+        let desiredHeight = canvas.width / EngineGlobals.requestedAspectRatio;
+        let amount = (canvas.height - desiredHeight) / 2;
+        zeroY = amount;
         ctx.fillStyle = letterboxColor
-        ctx.fillRect(0,0,canvas.width, amount);
-        ctx.fillRect(0,canvas.height-amount,canvas.width, amount);
+        ctx.fillRect(0, 0, canvas.width, amount);
+        ctx.fillRect(0, canvas.height - amount, canvas.width, amount);
     }
-    else{
-        let desiredWidth = canvas.height * requestedAspectRatio
-        let amount = (canvas.width-desiredWidth)/2;
+    else {
+        let desiredWidth = canvas.height * EngineGlobals.requestedAspectRatio
+        let amount = (canvas.width - desiredWidth) / 2;
+        zeroX = amount;
         ctx.fillStyle = letterboxColor
-        ctx.fillRect(0,0,amount, canvas.height);
-        ctx.fillRect(canvas.width-amount,0,amount, canvas.height);
+        ctx.fillRect(0, 0, amount, canvas.height);
+        ctx.fillRect(canvas.width - amount, 0, amount, canvas.height);
     }
 
-    //Check if it's too wide
-    //Calculate the letter boxing amount
-    //Fill the letter boxes
+    //Now draw any UI. Note we do this after we draw the letterboxes.
+
+     min = scene.gameObjects.filter(go=>go.components.some(c=>c.drawGUI))
+    .map(go => go.layer)
+    .reduce((previous, current)=>Math.min(previous, current))
+
+     max = scene.gameObjects
+    .map(go => go.layer)
+    .reduce((previous, current)=>Math.max(previous, current))
+
+    //Loop through the components and draw them.
+    ctx.save();
+    ctx.translate(zeroX, zeroY)
+    ctx.scale(logicalScaling, logicalScaling);
+    for (let i = min; i <= max; i++) {
+        let gameObjects = scene.gameObjects.filter(go=>go.layer==i)
+
+        for (let gameObject of gameObjects) {
+            for (let component of gameObject.components) {
+                if (component.drawGUI) {
+                    component.drawGUI(ctx)
+                }
+            }
+        }
+    }
+    ctx.restore();
+
+    
 
     //Draw debugging information
     let debug = false;
@@ -288,6 +330,9 @@ function draw() {
  */
 function start(title, settings = {}) {
 
+    //Boot the input event handlers
+    Input.start();
+
     //Match the size of the canvas to the browser's size
     //This allows us to respond to browser size changes
     canvas.width = window.innerWidth
@@ -295,12 +340,12 @@ function start(title, settings = {}) {
 
 
     document.title = title
-    if(settings){
-        requestedAspectRatio = settings.aspectRatio ? settings.aspectRatio : 16/9
+    if (settings) {
+        EngineGlobals.requestedAspectRatio = settings.aspectRatio ? settings.aspectRatio : 16 / 9
         letterboxColor = settings.letterboxColor ? settings.letterboxColor : "magenta"
-        logicalWidth = settings.logicalWidth ? settings.logicalWidth : 100
+        EngineGlobals.logicalWidth = settings.logicalWidth ? settings.logicalWidth : 100
     }
-    
+
 
     //Run the game loop 25 times a second
     setInterval(gameLoop, 1000 * Time.deltaTime)
