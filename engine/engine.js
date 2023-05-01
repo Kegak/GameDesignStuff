@@ -7,11 +7,15 @@ import "./Circle.js"
 import "./Camera.js"
 import "./Rectangle.js"
 import "./GUIRectangle.js"
+import "./GUIText.js"
+import "./GUITextCentered.js"
+import "./ScreenRectangle.js"
 import "./Line.js"
 import "./Text.js"
 import "./Vector2.js"
 import "./Time.js"
 import "./Input.js"
+import "./CameraMover.js"
 
 class EngineGlobals{
     static requestedAspectRatio = 16/9;
@@ -52,22 +56,6 @@ let mouseY
 //Note the strings has to be all lowercase, e.g. keydown not keyDown or KeyDown
 document.addEventListener("keydown", keyDown)
 document.addEventListener("keyup", keyUp)
-
-document.addEventListener("mousedown", mouseDown);
-document.addEventListener("mouseup", mouseUp);
-document.addEventListener("mousemove", mouseMove);
-
-
-//Mouse event handlers
-function mouseDown(e) {
-    //console.log("mouseDown: " + e.clientX + " " + e.clientY)
-}
-function mouseUp(e) {
-    //console.log("mouseUp: " + e.clientX + " " + e.clientY)
-}
-function mouseMove(e) {
-    //console.log("mouseMove: " + e.clientX + " " + e.clientY)
-}
 
 //Key up event handlers
 function keyUp(e) {
@@ -184,7 +172,7 @@ function update() {
             }
         }
     }
-
+    Input.finishFrame();
 
 
 }
@@ -222,10 +210,12 @@ function draw() {
     let scene = SceneManager.getActiveScene()
 
     ctx.save();
-    let logicalScaling = browserWidth / EngineGlobals.logicalWidth
+    // let logicalScaling = browserWidth / EngineGlobals.logicalWidth * Camera.main.transform.sx;
+    let logicalScaling = Camera.getLogicalScaleZoomable(ctx);
     ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
     ctx.scale(logicalScaling, logicalScaling)
 
+    //ctx.scale(Camera.main.transform.sx, Camera.main.transform.sy);
     ctx.translate(-Camera.main.transform.x, -Camera.main.transform.y)
 
 
@@ -233,11 +223,11 @@ function draw() {
     //Map/Reduce
     let min = scene.gameObjects.filter(go=>go.components.some(c=>c.draw))
     .map(go => go.layer)
-    .reduce((previous, current)=>Math.min(previous, current))
+    .reduce((previous, current)=>Math.min(previous, current),0)
 
-    let max = scene.gameObjects
+    let max = scene.gameObjects.filter(go=>go.components.some(c=>c.draw))
     .map(go => go.layer)
-    .reduce((previous, current)=>Math.max(previous, current))
+    .reduce((previous, current)=>Math.max(previous, current),0)
 
     //Loop through the components and draw them.
     for (let i = min; i <= max; i++) {
@@ -276,14 +266,14 @@ function draw() {
     }
 
     //Now draw any UI. Note we do this after we draw the letterboxes.
-
+    logicalScaling = Camera.getLogicalScale(ctx);
      min = scene.gameObjects.filter(go=>go.components.some(c=>c.drawGUI))
     .map(go => go.layer)
-    .reduce((previous, current)=>Math.min(previous, current))
+    .reduce((previous, current)=>Math.min(previous, current),0)
 
-     max = scene.gameObjects
+     max = scene.gameObjects.filter(go=>go.components.some(c=>c.drawGUI))
     .map(go => go.layer)
-    .reduce((previous, current)=>Math.max(previous, current))
+    .reduce((previous, current)=>Math.max(previous, current),0)
 
     //Loop through the components and draw them.
     ctx.save();
@@ -302,6 +292,33 @@ function draw() {
     }
     ctx.restore();
 
+    //Now draw directly on the screen
+    ctx.save();
+    min = scene.gameObjects.filter(go=>go.components.some(c=>c.drawScreen))
+    .map(go => go.layer)
+    .reduce((previous, current)=>Math.min(previous, current),0)
+
+     max = scene.gameObjects.filter(go=>go.components.some(c=>c.drawScreen))
+    .map(go => go.layer)
+    .reduce((previous, current)=>Math.max(previous, current),0)
+
+    //Loop through the components and draw them.
+    ctx.save();
+    for (let i = min; i <= max; i++) {
+        let gameObjects = scene.gameObjects.filter(go=>go.layer==i)
+
+        for (let gameObject of gameObjects) {
+            for (let component of gameObject.components) {
+                if (component.drawScreen) {
+                    component.drawScreen(ctx)
+                }
+            }
+        }
+    }
+    ctx.restore();
+
+
+
     
 
     //Draw debugging information
@@ -312,7 +329,7 @@ function draw() {
             ctx.fillStyle = "white"
             ctx.font = "20px Courier"
             let string = gameObject.name + " (" + gameObject.transform.x + "," + gameObject.transform.y + ")"
-            ctx.fillText(string, 50, y);
+            ctx.fillText(string, 0, y);
             y += 20;
         }
     }
@@ -325,7 +342,7 @@ function draw() {
  * 
  * The engine accepts the following settings. Any other keys on the settings object are ignored.
  * - aspectRatio. The aspect ratio requested by the game. Defaults to 16/9
- * - letterboxColor. The color of the letterboxing bars. To remove letterboxing, use "transparent". Defaults to magenta.
+ * - letterboxColor. The color of the letterboxing bars. To remove letterboxing, use "transparent". Defaults to black.
  * - logicalWidth. The logical width of the game. The engine will scale the drawing area to support this logical width. Defaults to 100.
  */
 function start(title, settings = {}) {
@@ -342,7 +359,7 @@ function start(title, settings = {}) {
     document.title = title
     if (settings) {
         EngineGlobals.requestedAspectRatio = settings.aspectRatio ? settings.aspectRatio : 16 / 9
-        letterboxColor = settings.letterboxColor ? settings.letterboxColor : "magenta"
+        letterboxColor = settings.letterboxColor ? settings.letterboxColor : "black"
         EngineGlobals.logicalWidth = settings.logicalWidth ? settings.logicalWidth : 100
     }
 
