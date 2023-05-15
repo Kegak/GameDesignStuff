@@ -1,7 +1,9 @@
 import "/engine/engine.js"
-let enemy_num = 3
-let num_destroy = 0
 
+class Global{
+    static enemy_num = 3
+    static num_destroy = 0
+}
 
 //-----------------------------------------------------
 //Start
@@ -421,9 +423,9 @@ class HPComponent extends Component{
         
         if (this.hp == 0){
             
-            enemy_num = 3
+            Global.enemy_num = 3
             waveNumGameObject.num = 1
-            num_destroy = 0
+            Global.num_destroy = 0
             SceneManager.changeScene(3)
         }
         if (this.hp == 1){
@@ -594,12 +596,12 @@ class CrunchyComponent extends Component{
         }
         
         if ((turretComponent.transform.x >= this.transform.x-2 && turretComponent.transform.x <= this.transform.x+2) && (turretComponent.transform.y >= this.transform.y-2 && turretComponent.transform.y <= this.transform.y+2)){
-            num_destroy += 1
+            Global.num_destroy += 1
             crunchyBulletComponent.parent.destroy()
             this.parent.destroy()
-            if (num_destroy == enemy_num){
-                num_destroy = 0 
-                enemy_num += 1
+            if (Global.num_destroy == Global.enemy_num){
+                Global.num_destroy = 0 
+                Global.enemy_num += 1
                 waveNumGameObject.num +=1
                 SceneManager.changeScene(1)
             }
@@ -625,13 +627,13 @@ class CrunchyComponent extends Component{
         // }
 
         if (bulletComponent.fired == true && ((bulletComponent.transform.x >= this.transform.x-1 && bulletComponent.transform.x <= this.transform.x+5) && ((bulletComponent.transform.y >= this.transform.y-1) && (bulletComponent.transform.y <= this.transform.y+5)))){
-            num_destroy += 1
+            Global.num_destroy += 1
             crunchyBulletComponent.parent.destroy()
             this.parent.destroy()
             bulletComponent.fired = false
-            if (num_destroy == enemy_num){
-                num_destroy = 0 
-                enemy_num += 1
+            if (Global.num_destroy == Global.enemy_num){
+                Global.num_destroy = 0 
+                Global.enemy_num += 1
                 waveNumGameObject.num +=1
                 SceneManager.changeScene(1)
             }
@@ -693,7 +695,7 @@ class MainScene extends Scene {
         this.addGameObject(new GameObject("MainControllerGameObject")).addComponent(new MainController())
         this.addGameObject(new GameObject("WaveNumGameObject")).addComponent(new WaveNumComponent())
         
-        for (let i = 0; i < enemy_num; i++){
+        for (let i = 0; i < Global.enemy_num; i++){
         
 
         this.addGameObject(

@@ -7,8 +7,8 @@ class StartController extends Component {
 
     }
     update() {
-        this.freezeTime += Time.deltaTime
-        if (keysDown["a"] && this.freezeTime >= this.maxFreezeTime) {
+        
+        if (Input.keyUp["a"] ) {
             SceneManager.changeScene(1)
         }
 
